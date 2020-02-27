@@ -1,0 +1,22 @@
+{
+  "name": "datatable-alteditor",
+  "version": "2.0.0",
+  "description": "Lightweight editor for DataTables",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spaghett1c0de/DataTable-AltEditor.git"
+  },
+  "author": "kingkode",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spaghett1c0de/DataTable-AltEditor/issues"
+  },
+  "homepage": "https://github.com/spaghett1c0de/DataTable-AltEditor#readme"
+}
