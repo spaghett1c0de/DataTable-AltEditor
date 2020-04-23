@@ -145,14 +145,14 @@
                 this.language = DataTable.settings.values().next().value.oLanguage.altEditor || {};
                 this.language.modalClose = this.language.modalClose || 'Close';
                 this.language.edit = this.language.edit || {};
-                this.language.edit = { title: this.language.edit.title || 'Edit record',
+                this.language.edit = { title: this.language.edit.title || 'Edit Record',
                                        button: this.language.edit.button || 'Edit'
                                      };
                 this.language.delete = this.language.delete || {};
-                this.language.delete = { title: this.language.delete.title || 'Delete record',
+                this.language.delete = { title: this.language.delete.title || 'Delete Record',
                                          button: this.language.delete.button || 'Delete' };
                 this.language.add = this.language.add || {};
-                this.language.add = { title: this.language.add.title || 'Add record',
+                this.language.add = { title: this.language.add.title || 'Add Record',
                                       button: this.language.add.button || 'Add'
                                     };
                 this.language.success = this.language.success || 'Success!';
@@ -167,8 +167,8 @@
                     '<div class="modal-dialog">' +
                     '<div class="modal-content">' +
                     '<div class="modal-header">' +
-                    '<h4 style="padding-top: 1rem;padding-left: 1rem;" class="modal-title"></h4>' +
-                    '<button style="margin: initial;" type="button" class="close" data-dismiss="modal" aria-label="' + this.language.modalClose + '">' +
+                    '<h4 class="modal-title"></h4>' +
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="' + this.language.modalClose + '">' +
                     '<span aria-hidden="true">&times;</span></button>' +
                     '</div>' +
                     '<div class="modal-body">' +
@@ -403,8 +403,8 @@
 
                 var selector = this.modal_selector;
                 $(selector).on('show.bs.modal', function () {
-                    var btns = '<button type="button" data-content="remove" class="btn btn-default" data-dismiss="modal">' + that.language.modalClose + '</button>' +
-                        '<button type="submit"  data-content="remove" class="btn btn-danger" id="deleteRowBtn">' + that.language.delete.button + '</button>';
+                    var btns = '<button type="button" data-content="remove" class="btn btn-secondary btn-pill-left" data-dismiss="modal">' + that.language.modalClose + '</button>' +
+                        '<button type="submit"  data-content="remove" class="btn btn-danger btn-pill-right" id="deleteRowBtn">' + that.language.delete.button + '</button>';
                     $(selector).find('.modal-title').html(that.language.delete.title);
                     $(selector).find('.modal-body').html(data);
                     $(selector).find('.modal-footer').html(btns);
@@ -597,8 +597,8 @@
                 
                 var selector = this.modal_selector;
                 $(selector).on('show.bs.modal', function () {
-                    var btns = '<button type="button" data-content="remove" class="btn btn-default" data-dismiss="modal">'+closeCaption+'</button>' +
-                        '<button type="submit" form="' + formName + '" data-content="remove" class="btn btn-primary" id="'+buttonClass+'">'+buttonCaption+'</button>';
+                    var btns = '<button type="button" data-content="remove" class="btn btn-secondary btn-pill-left" data-dismiss="modal">'+closeCaption+'</button>' +
+                        '<button type="submit" form="' + formName + '" data-content="remove" class="btn btn-primary btn-pill-right" id="'+buttonClass+'">'+buttonCaption+'</button>';
                     $(selector).find('.modal-title').html(title);
                     $(selector).find('.modal-body').html(data);
                     $(selector).find('.modal-footer').html(btns);
