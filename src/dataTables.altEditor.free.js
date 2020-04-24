@@ -167,7 +167,7 @@
                     '<div class="modal-dialog">' +
                     '<div class="modal-content">' +
                     '<div class="modal-header">' +
-                    '<h4 class="modal-title"></h4>' +
+                    '<h5 class="modal-title"></h5>' +
                     '<button type="button" class="close" data-dismiss="modal" aria-label="' + this.language.modalClose + '">' +
                     '<span aria-hidden="true">&times;</span></button>' +
                     '</div>' +
@@ -384,7 +384,7 @@
                         data += "<input type='hidden' id='" + columnDefs[j].title + "' value='" + adata.data()[0][columnDefs[j].name] + "'></input>";
                     }
                     else if (columnDefs[j].type.indexOf("file") < 0) {
-                        data += "<div style='margin-left: initial;margin-right: initial;' class='form-group row'><label for='"
+                        data += "<div class='row mb-0'><div class='col-12'><label for='"
                             + that._quoteattr(columnDefs[j].name)
                             + "'>"
                             + columnDefs[j].title
@@ -397,7 +397,7 @@
                             + "' style='overflow:hidden'  class='form-control' value='"
                             + that._quoteattr(adata.data()[0][columnDefs[j].name]) + "' >"
                             + adata.data()[0][columnDefs[j].name]
-                            + "</input></div>";
+                            + "</input></div></div>";
                     }
                 }
 
@@ -516,10 +516,9 @@
                     }
                     else {
                         // handle fields that are visible to the user
-                        data += "<div style='margin-left: initial;margin-right: initial;' class='form-group row' id='alteditor-row-" + this._quoteattr(columnDefs[j].name) +"'>";
-                        data += "<div class='col-sm-3 col-md-3 col-lg-3 text-right' style='padding-top:4px;'>";
-                        data += "<label for='" + columnDefs[j].name + "'>" + columnDefs[j].title + ":</label></div>";
-                        data += "<div class='col-sm-8 col-md-8 col-lg-8'>";
+                        data += "<div class='form-group row mb-0' id='alteditor-row-" + this._quoteattr(columnDefs[j].name) +"'>";
+                        data += "<label class='col-sm-3 col-form-label text-left text-sm-right' for='" + columnDefs[j].name + "'>" + columnDefs[j].title + ":</label>";
+                        data += "<div class='col-sm-9'>";
 
                         // Adding readonly-fields
                         if (columnDefs[j].type.indexOf("readonly") >= 0) {
@@ -530,7 +529,7 @@
                                 + this._quoteattr(columnDefs[j].title)
                                 + "' placeholder='"
                                 + this._quoteattr(columnDefs[j].title)
-                                + "' style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                                + "' style='overflow:hidden'  class='form-control' value=''>";
                         }
                         // Adding select-fields
                         else if (columnDefs[j].type.indexOf("select") >= 0) {
@@ -586,7 +585,7 @@
                                 + (columnDefs[j].disabled ? ' disabled ' : '')
                                 + (columnDefs[j].required ? ' required ' : '')
                                 + (columnDefs[j].maxLength == false ? "" : " maxlength='" + columnDefs[j].maxLength + "'")
-                                + " style='overflow:hidden'  class='form-control  form-control-sm' value=''>";
+                                + " style='overflow:hidden'  class='form-control' value=''>";
                         }
                         data += "<label id='" + this._quoteattr(columnDefs[j].name) + "label"
                                 + "' class='errorLabel'></label>";
