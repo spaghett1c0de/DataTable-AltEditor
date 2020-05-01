@@ -1,4 +1,4 @@
-## JQuery Datatables Editor - Alternative to the official one
+## JQuery Datatables Editor (Bootstrap 4+) - Alternative to the official one
 
 Add capabilities to add, edit and delete rows in your datatables through the use of modals.
 

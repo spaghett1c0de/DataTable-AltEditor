@@ -1,16 +1,18 @@
 /**
- * @summary altEditor
- * @description Lightweight editor for DataTables
- * @version 2.0
- * @file dataTables.editor.free.js
- * @author kingkode (www.kingkode.com)
- * Modified by: Kasper Olesen (https://github.com/KasperOlesen), Luca Vercelli (https://github.com/luca-vercelli), Zack Hable (www.cobaltdevteam.com)
+ * @summary An alternative to DataTables Editor
+ * @description A lightweight jQuery plugin that offers full row editing as an alternative to DataTables Editor. Now with Bootstrap 4 support.
+ * @version 3.0
+ * @file dataTables.altEditor.js
+ * @author Kingkode (www.kingkode.com)
+ * Modified by: Kasper Olesen (https://github.com/KasperOlesen),
+ *              Luca Vercelli (https://github.com/luca-vercelli),
+ *              Zack Hable (www.cobaltdevteam.com),
+ *              Vincent Liu (https://github.com/spaghett1c0de)
  * @contact www.kingkode.com/contact
  * @contact zack@cobaltdevteam.com
- * @copyright Copyright 2016 Kingkode
+ * @copyright Copyright 2020 Kingkode
  *
- * This source file is free software, available under the following license: MIT
- * license
+ * This source file is free software, available under the following license: MIT license
  *
  * This source file is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -39,47 +41,38 @@
     // Browser
     factory(jQuery, window, document);
   }
-})
-(function($, window, document, undefined) {
-  'use strict';
-  var DataTable = $.fn.dataTable;
+})(function($, window, document, undefined) {
 
-  var _instance = 0;
+  'use strict';
+
+  const DataTable = $.fn.dataTable;
+  let _instance = 0;
 
   /**
    * altEditor provides modal editing of records for Datatables
    *
    * @class altEditor
    * @constructor
-   * @param {object}
-   *            oTD DataTables settings object
-   * @param {object}
-   *            oConfig Configuration object for altEditor
+   * @param {object} oTD DataTables settings object
+   * @param {object} oConfig Configuration object for altEditor
    */
-  var altEditor = function(dt, opts) {
+  const altEditor = function(dt, opts) {
     if (!DataTable.versionCheck || !DataTable.versionCheck('1.10.8')) {
       throw ('Warning: altEditor requires DataTables 1.10.8 or greater');
     }
 
     // User and defaults configuration object
-    this.c = $.extend(true, {}, DataTable.defaults.altEditor,
-        altEditor.defaults, opts);
+    this.c = $.extend(true, {}, DataTable.defaults.altEditor, altEditor.defaults, opts);
 
-    /**
-     * @namespace Settings object which contains customisable information
-     *            for altEditor instance
-     */
+    /** @namespace Settings object which contains customisable information for altEditor instance */
     this.s = {
       /** @type {DataTable.Api} DataTables' API instance */
       dt: new DataTable.Api(dt),
-
       /** @type {String} Unique namespace for events attached to the document */
       namespace: '.altEditor' + (_instance++),
     };
 
-    /**
-     * @namespace Common and useful DOM elements for the class instance
-     */
+    /** @namespace Common and useful DOM elements for the class instance */
     this.dom = {
       /** @type {jQuery} altEditor handle */
       modal: $('<div class="dt-altEditor-handle"/>'),
@@ -90,26 +83,19 @@
   };
 
   $.extend(altEditor.prototype, {
-    /***************************************************************
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Constructor * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     */
-
-    /**
-     * Initialise the RowReorder instance
-     *
-     * @private
-     */
+    /** @private _constructor: Initialise the RowReorder instance */
     _constructor: function() {
-      var that = this;
-      var dt = this.s.dt;
+      const that = this;
+      const dt = this.s.dt;
 
       if (dt.settings()[0].oInit.onAddRow) {
         that.onAddRow = dt.settings()[0].oInit.onAddRow;
       }
+
       if (dt.settings()[0].oInit.onDeleteRow) {
         that.onDeleteRow = dt.settings()[0].oInit.onDeleteRow;
       }
+
       if (dt.settings()[0].oInit.onEditRow) {
         that.onEditRow = dt.settings()[0].oInit.onEditRow;
       }
@@ -123,22 +109,13 @@
       });
     },
 
-    /***************************************************************
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Private methods * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     */
-
-    /**
-     * Setup dom and bind button actions
-     *
-     * @private
-     */
+    /** @private _setup: DOM and bind button actions */
     _setup: function() {
-      var that = this;
-      var dt = this.s.dt;
-      this.random_id = ('' + Math.random()).replace('.', '');
-      var modal_id = `altEditor-modal-${this.random_id}`;
-      this.modal_selector = '#' + modal_id;
+      const that = this;
+      const dt = this.s.dt;
+      this.random_id = String(Math.random()).replace('.', '');
+      const modal_id = `altEditor-modal-${this.random_id}`;
+      this.modal_selector = `#${modal_id}`;
       this.language = DataTable.settings.values().next().value.oLanguage.altEditor || {};
       this.language.modalClose = this.language.modalClose || 'Close';
       this.language.edit = this.language.edit || {};
@@ -165,27 +142,26 @@
         required: this.language.error.required || 'Field is required',
         unique: this.language.error.unique || 'Duplicated field',
       };
-      var modal = '<div class="modal fade" id="' + modal_id + '" tabindex="-1" role="dialog">' +
-          '<div class="modal-dialog">' +
-          '<div class="modal-content">' +
-          '<div class="modal-header">' +
-          '<h5 class="modal-title"></h5>' +
-          '<button type="button" class="close" data-dismiss="modal" aria-label="'
-          + this.language.modalClose + '">' +
-          '<span aria-hidden="true">&times;</span></button>' +
-          '</div>' +
-          '<div class="modal-body">' +
-          '<p></p>' +
-          '</div>' +
-          '<div class="modal-footer">' +
-          '</div>' +
-          '</div>' +
-          '</div>' +
-          '</div>';
-      // add modal
+      const modal = `
+          <div class="modal fade" id="${modal_id}" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"></h5>
+                  <button type="button" class="close" data-dismiss="modal" 
+                          aria-label="${this.language.modalClose}">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer"></div>
+              </div>
+            </div>
+          </div>`;
+      // Add modal
       $('body').append(modal);
 
-      // add Edit Button
+      // Add 'Edit' button
       if (dt.button('edit:name')) {
         dt.button('edit:name').action(function(e, dt, node, config) {
           that._openEditModal();
@@ -198,7 +174,7 @@
         });
       }
 
-      // add Delete Button
+      // Add 'Delete' button
       if (dt.button('delete:name')) {
         dt.button('delete:name').action(function(e, dt, node, config) {
           that._openDeleteModal();
@@ -211,7 +187,7 @@
         });
       }
 
-      // add Add Button
+      // Add 'Add' button
       if (dt.button('add:name')) {
         dt.button('add:name').action(function(e, dt, node, config) {
           that._openAddModal();
@@ -224,30 +200,31 @@
         });
       }
 
-      // bind 'unique' error messages
+      // Bind 'unique' error messages
       $(this.modal_selector).bind('input', '[data-unique]', function(elm) {
-        if ($(elm.target).attr('data-unique') == null || $(elm.target).attr('data-unique')
-            === 'false') {
+        const $target = $(elm.target);
+        if ($target.attr('data-unique') === null || $target.attr('data-unique') === 'false') {
           return;
         }
-        var target = $(elm.target);
-        var colData = dt.column('th:contains(\'' + target.attr('name') + '\')').data();
-        // go through each item in this column
-        var selectedCellData = null;
-        if (dt.row({selected: true}).index() != null) {
+
+        // Go through each item in this column
+        let selectedCellData = null;
+        if (dt.row({selected: true}).index() !== null) {
           selectedCellData = dt.cell(dt.row({selected: true}).index(),
-              dt.column('th:contains(\'' + target.attr('name') + '\')').index()).data();
+              dt.column('th:contains(\'' + $target.attr('name') + '\')').index()).data();
         }
         elm.target.setCustomValidity('');
-        for (var j in colData) {
-          // if the element is in the column and its not the selected one then its not unique
-          if (target.val() == colData[j] && colData[j] != selectedCellData) {
+
+        const colData = dt.column('th:contains(\'' + $target.attr('name') + '\')').data();
+        colData.forEach(element => {
+          // If the element is in the column and its not the selected one then its not unique
+          if ($target.val() === element && element !== selectedCellData) {
             elm.target.setCustomValidity(that.language.error.unique);
           }
-        }
+        });
       });
 
-      // add Refresh button
+      // Add 'Refresh' button
       if (this.s.dt.button('refresh:name')) {
         this.s.dt.button('refresh:name').action(function(e, dt, node, config) {
           if (dt.ajax && dt.ajax.url()) {
@@ -257,108 +234,72 @@
       }
     },
 
-    /**
-     * Emit an event on the DataTable for listeners
-     *
-     * @param {string}
-     *            name Event name
-     * @param {array}
-     *            args Event arguments
-     * @private
-     */
-    _emitEvent: function(name, args) {
-      this.s.dt.iterator('table', function(ctx, i) {
-        $(ctx.nTable).triggerHandler(name + '.dt', args);
-      });
-    },
-
-    /**
-     * Open Edit Modal for selected row
-     *
-     * @private
-     */
+    /** @private Open Edit Modal for selected row */
     _openEditModal: function() {
-
-      var dt = this.s.dt;
-      var adata = dt.rows({
-        selected: true,
-      });
-
-      var columnDefs = this.completeColumnDefs();
-      var data = this.createDialog(columnDefs, this.language.edit.title,
-          this.language.edit.button,
+      const columnDefs = this.completeColumnDefs();
+      this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
           this.language.modalClose, 'editRowBtn', 'altEditor-edit-form');
 
-      var selector = this.modal_selector;
-
-      for (var j in columnDefs) {
-        var arrIndex = '[\'' + columnDefs[j].name.toString().split('.').join('\'][\'') + '\']';
-        var selectedValue = eval('adata.data()[0]' + arrIndex);
-        var jquerySelector = '#' + columnDefs[j].name.toString().replace(/\./g, '\\.');
-        $(selector).find(jquerySelector).val(this._quoteattr(selectedValue));
-        $(selector).find(jquerySelector).trigger('change'); // required by select2
-      }
-
-      $(selector + ' input[0]').focus();
-      $(selector).
-          trigger('alteditor:some_dialog_opened').
-          trigger('alteditor:edit_dialog_opened');
-    },
-
-    /**
-     * Callback for "Edit" button
-     */
-    _editRowData: function() {
-      var that = this;
-      var dt = this.s.dt;
-
-      // Complete new row data
-      var rowDataArray = {};
-
-      var adata = dt.rows({
-        selected: true,
+      const adata = this.s.dt.rows({selected: true});
+      const $selector = $(this.modal_selector);
+      columnDefs.forEach(column => {
+        const arrIndex = '[\'' + column.name.toString().split('.').join('\'][\'') + '\']';
+        const selectedText = this._quoteattr(eval('adata.data()[0]' + arrIndex));
+        const jquerySelector = '#' + column.name.toString().replace(/\./g, '\\.');
+        const $jquerySelector = $selector.find(jquerySelector);
+        if (column.type === 'select') {
+          const selectedValue = this._quoteattr(
+              $jquerySelector.find(`option:contains("${selectedText}")`).val());
+          $jquerySelector.val(selectedValue);
+          if (column.selectpicker) {
+            $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
+          }
+        } else {
+          $jquerySelector.val(selectedText);
+        }
       });
 
+      $(`${this.modal_selector} input`)[0].focus();
+      $selector.trigger('alteditor:some_dialog_opened').trigger('alteditor:edit_dialog_opened');
+    },
+
+    // Callback for "Edit" button
+    _editRowData: function() {
+      const that = this;
+
+      // Complete new row data
+      const rowDataArray = {};
+
       // Getting the inputs from the edit-modal
-      $(`form[name="altEditor-edit-form-${this.random_id}"] *`).
-          filter(':input[type!="file"]').
-          each(function(i) {
-            rowDataArray[$(this).attr('id')] = $(this).val();
-          });
+      const $editForm = $(`form[name="altEditor-edit-form-${this.random_id}"] *`);
+      $editForm.filter(':input[type!="file"]').each(function(i) {
+        rowDataArray[$(this).attr('id')] = $(this).val();
+      });
 
       //Getting the textArea from the modal
-      $(`form[name="altEditor-edit-form-${this.random_id}"] *`).
-          filter('textarea').
-          each(function(i) {
-            rowDataArray[$(this).attr('id')] = $(this).val();
-          });
+      $editForm.filter('textarea').each(function(i) {
+        rowDataArray[$(this).attr('id')] = $(this).val();
+      });
 
       //Getting Files from the modal
-      var numFilesQueued = 0;
-      $(`form[name="altEditor-edit-form-${this.random_id}"] *`).
-          filter(':input[type="file"]').
-          each(function(i) {
-            if ($(this).prop('files')[0]) {
-              ++numFilesQueued;
-              that.getBase64($(this).prop('files')[0], function(filecontent) {
-                rowDataArray[$(this).attr('id')] = filecontent;
-                --numFilesQueued;
-              });
-            }
+      let numFilesQueued = 0;
+      $editForm.filter(':input[type="file"]').each(function(i) {
+        if ($(this).prop('files')[0]) {
+          ++numFilesQueued;
+          that.getBase64($(this).prop('files')[0], function(filecontent) {
+            rowDataArray[$(this).attr('id')] = filecontent;
+            --numFilesQueued;
           });
+        }
+      });
 
-      console.log(rowDataArray); //DEBUG
-
-      var checkFilesQueued = function() {
-        if (numFilesQueued == 0) {
+      const checkFilesQueued = function() {
+        if (numFilesQueued === 0) {
           that.onEditRow(that,
               rowDataArray,
               function(data, b, c, d, e) { that._editRowCallback(data, b, c, d, e); },
-              function(data) {
-                that._errorCallback(data);
-              });
+              function(data) { that._errorCallback(data); });
         } else {
-          console.log('Waiting for file base64-decoding...');
           setTimeout(checkFilesQueued, 1000);
         }
       };
@@ -366,133 +307,108 @@
       checkFilesQueued();
     },
 
-    /**
-     * Open Delete Modal for selected row
-     *
-     * @private
-     */
+    /** @private Open Delete Modal for selected row */
     _openDeleteModal: function() {
-
-      var that = this;
-      var dt = this.s.dt;
-      var adata = dt.rows({
-        selected: true,
-      });
-      var columnDefs = this.completeColumnDefs();
-      const formName = 'altEditor-delete-form-' + this.random_id;
-
-      // TODO
-      // we should use createDialog()
-      // var data = this.createDialog(columnDefs, this.language.delete.title, this.language.delete.button,
-      //      this.language.modalClose, 'deleteRowBtn', 'altEditor-delete-form');
+      const that = this;
+      const dt = this.s.dt;
+      const adata = dt.rows({selected: true});
+      const formName = `altEditor-delete-form-${this.random_id}`;
 
       // Building delete-modal
-      var data = '';
-
-      for (var j in columnDefs) {
-        if (columnDefs[j].type.indexOf('hidden') >= 0) {
-          data += '<input type=\'hidden\' id=\'' + columnDefs[j].title + '\' value=\''
-              + adata.data()[0][columnDefs[j].name] + '\'></input>';
-        } else if (columnDefs[j].type.indexOf('file') < 0) {
-          data += '<div class=\'row mb-0\'><div class=\'col-12\'><label for=\''
-              + that._quoteattr(columnDefs[j].name)
-              + '\'>'
-              + columnDefs[j].title
-              + ':&nbsp</label> <input  type=\'hidden\'  id=\''
-              + that._quoteattr(columnDefs[j].title)
-              + '\' name=\''
-              + that._quoteattr(columnDefs[j].title)
-              + '\' placeholder=\''
-              + that._quoteattr(columnDefs[j].title)
-              + '\' style=\'overflow:hidden\'  class=\'form-control\' value=\''
-              + that._quoteattr(adata.data()[0][columnDefs[j].name]) + '\' >'
-              + adata.data()[0][columnDefs[j].name]
-              + '</input></div></div>';
+      let data = '';
+      const columnDefs = this.completeColumnDefs();
+      columnDefs.forEach(column => {
+        if (column.type.indexOf('hidden') >= 0) {
+          data += `<input type="hidden" id="${column.title}" 
+                          value="${adata.data()[0][column.name]}">`;
+        } else if (column.type.indexOf('file') < 0) {
+          data += `
+              <div class="row mb-0">
+                <div class="col-12">
+                  <label for="${that._quoteattr(column.name)}">
+                    ${column.title}:&nbsp
+                  </label>
+                  <input type="hidden" id="${that._quoteattr(column.title)}" 
+                         name="${that._quoteattr(column.title)}" 
+                         placeholder="${that._quoteattr(column.title)}" 
+                         style="overflow:hidden"  class="form-control" 
+                         value="${that._quoteattr(adata.data()[0][column.name])}">
+                    ${adata.data()[0][column.name]}
+                  </input>
+                </div>
+              </div>`;
         }
-      }
+      });
 
-      var selector = this.modal_selector;
-      $(selector).on('show.bs.modal', function() {
-        var btns = '<button type="button" data-content="remove" class="btn btn-secondary btn-pill-left" data-dismiss="modal">'
-            + that.language.modalClose + '</button>' +
-            '<button type="submit"  data-content="remove" class="btn btn-danger btn-pill-right" id="deleteRowBtn">'
-            + that.language.delete.button + '</button>';
-        $(selector).find('.modal-title').html(that.language.delete.title);
-        $(selector).find('.modal-body').html(data);
-        $(selector).find('.modal-footer').html(btns);
-        const modalContent = $(selector).find('.modal-content');
+      const $selector = $(this.modal_selector);
+      $selector.on('show.bs.modal', function() {
+        const btns = `
+            <button type="button" data-content="remove" class="btn btn-secondary btn-pill-left"
+                    data-dismiss="modal">${that.language.modalClose}</button>
+            <button type="submit" data-content="remove" class="btn btn-danger btn-pill-right" 
+                    id="deleteRowBtn">${that.language.delete.button}</button>`;
+        $selector.find('.modal-title').html(that.language.delete.title);
+        $selector.find('.modal-body').html(data);
+        $selector.find('.modal-footer').html(btns);
+        const modalContent = $selector.find('.modal-content');
         if (modalContent.parent().is('form')) {
           modalContent.parent().attr('name', formName);
           modalContent.parent().attr('id', formName);
         } else {
-          modalContent.wrap(
-              '<form name=\'' + formName + '\' id=\'' + formName + '\' role=\'form\'></form>');
+          modalContent.wrap(`<form name="${formName}" id="${formName}" role="form"></form>`);
         }
       });
 
-      $(selector).modal('show');
-      $(selector + ' input[0]').focus();
-      $(selector).
-          trigger('alteditor:some_dialog_opened').
-          trigger('alteditor:delete_dialog_opened');
+      $selector.modal('show');
+      $(`${this.modal_selector} input`)[0].focus();
+      $selector.trigger('alteditor:some_dialog_opened').trigger('alteditor:delete_dialog_opened');
     },
 
-    /**
-     * Callback for "Delete" button
-     */
+    // Callback for 'Delete' button
     _deleteRow: function() {
-      var that = this;
-      var dt = this.s.dt;
+      const that = this;
+      const dt = this.s.dt;
+      const jsonDataArray = {};
+      const adata = dt.rows({selected: true});
 
-      var jsonDataArray = {};
-
-      var adata = dt.rows({
-        selected: true,
+      // Getting the IDs and Values of the table row
+      dt.context[0].aoColumns.forEach(column => {
+        // .data is the attribute name, if any; .idx is the column index, so it should always exists
+        let name;
+        if (column.data) {
+          name = column.data;
+        } else if (column.mData) {
+          name = column.mData;
+        } else {
+          name = column.idx;
+        }
+        jsonDataArray[name] = adata.data()[0][name];
       });
 
-      // Getting the IDs and Values of the tablerow
-      for (var i = 0; i < dt.context[0].aoColumns.length; i++) {
-        // .data is the attribute name, if any; .idx is the column index, so it should always exists
-        var name = dt.context[0].aoColumns[i].data ? dt.context[0].aoColumns[i].data :
-            dt.context[0].aoColumns[i].mData ? dt.context[0].aoColumns[i].mData :
-                dt.context[0].aoColumns[i].idx;
-        jsonDataArray[name] = adata.data()[0][name];
-      }
       that.onDeleteRow(that,
           jsonDataArray,
           function(data) { that._deleteRowCallback(data); },
-          function(data) {
-            that._errorCallback(data);
-          });
+          function(data) { that._errorCallback(data); });
     },
 
-    /**
-     * Open Add Modal for selected row
-     *
-     * @private
-     */
+    /** @private Open Add Modal for selected row */
     _openAddModal: function() {
-      var dt = this.s.dt;
-      var columnDefs = this.completeColumnDefs();
-      var data = this.createDialog(columnDefs, this.language.add.title,
-          this.language.add.button,
+      const columnDefs = this.completeColumnDefs();
+      this.createDialog(columnDefs, this.language.add.title, this.language.add.button,
           this.language.modalClose, 'addRowBtn', 'altEditor-add-form');
 
-      var selector = this.modal_selector;
-      $(selector + ' input[0]').focus();
-      $(selector).
+      $(`${this.modal_selector} input`)[0].focus();
+      $(this.modal_selector).
           trigger('alteditor:some_dialog_opened').
           trigger('alteditor:add_dialog_opened');
     },
 
-    /**
-     * Complete DataTable.context[0].aoColumns with default values
-     */
+    // Complete DataTable.context[0].aoColumns with default values
     completeColumnDefs: function() {
-      var columnDefs = [];
-      var dt = this.s.dt;
-      for (var i in dt.context[0].aoColumns) {
-        var obj = dt.context[0].aoColumns[i];
+      const columnDefs = [];
+      const columns = this.s.dt.context[0].aoColumns;
+      for (let i in columns) {
+        const obj = columns[i];
         columnDefs[i] = {
           title: obj.sTitle,
           name: (obj.data ? obj.data : obj.mData),
@@ -511,7 +427,7 @@
           uniqueMsg: (obj.uniqueMsg ? obj.uniqueMsg : ''),        // FIXME no more used
           maxLength: (obj.maxLength ? obj.maxLength : false),
           multiple: (obj.multiple ? obj.multiple : false),
-          select2: (obj.select2 ? obj.select2 : false),
+          selectpicker: (obj.selectpicker ? obj.selectpicker : false),
           datepicker: (obj.datepicker ? obj.datepicker : false),
           datetimepicker: (obj.datetimepicker ? obj.datetimepicker : false),
           editorOnChange: (obj.editorOnChange ? obj.editorOnChange : null),
@@ -522,332 +438,287 @@
 
     /**
      * Create both Edit and Add dialogs
-     * @param columnDefs as returned by completeColumnDefs()
+     * @param columnDefs - returned by completeColumnDefs()
+     * @param title - modal title
+     * @param buttonCaption - form submit button text (Add, Edit, or Delete)
+     * @param closeCaption - modal close button text (Close)
+     * @param buttonId - unique button id
+     * @param formName - name of the form
      */
-    createDialog: function(
-        columnDefs, title, buttonCaption, closeCaption, buttonClass, formName) {
-      formName = [formName, this.random_id].join('-');
-      var data = '';
-      for (var j in columnDefs) {
-
-        //handle hidden fields
-        if (columnDefs[j].type.indexOf('hidden') >= 0) {
-          data += '<input type=\'hidden\' id=\'' + columnDefs[j].name + '\' ></input>';
+    createDialog: function(columnDefs, title, buttonCaption, closeCaption, buttonId, formName) {
+      let data = '';
+      columnDefs.forEach(column => {
+        // Handle hidden fields
+        if (column.type.indexOf('hidden') >= 0) {
+          data += `<input type="hidden" id="${column.name}">`;
         } else {
-          // handle fields that are visible to the user
-          data += '<div class=\'form-group row mb-0\' id=\'alteditor-row-' + this._quoteattr(
-              columnDefs[j].name) + '\'>';
-          data += '<label class=\'col-sm-3 col-form-label text-left text-sm-right\' for=\''
-              + columnDefs[j].name + '\'>' + columnDefs[j].title + ':</label>';
-          data += '<div class=\'col-sm-9\'>';
+          // Handle fields that are visible to the user
+          data += `<div class="form-group row mb-0" 
+                        id="alteditor-row-${this._quoteattr(column.name)}">`;
+          data += `<label class="col-sm-3 col-form-label text-left text-sm-right" for="${column.name}">
+                     ${column.title}:</label>`;
+          data += '<div class="col-sm-9">';
 
-          // Adding readonly-fields
-          if (columnDefs[j].type.indexOf('readonly') >= 0) {
+          // Adding readonly fields
+          if (column.type.indexOf('readonly') >= 0) {
             // type=readonly is deprecated, kept for backward compatibility
-            data += '<input type=\'text\' readonly  id=\''
-                + this._quoteattr(columnDefs[j].name)
-                + '\' name=\''
-                + this._quoteattr(columnDefs[j].title)
-                + '\' placeholder=\''
-                + this._quoteattr(columnDefs[j].title)
-                + '\' style=\'overflow:hidden\'  class=\'form-control\' value=\'\'>';
+            data += `
+                <input type="text" id="${this._quoteattr(column.name)}" 
+                       name="${this._quoteattr(column.title)}" 
+                       placeholder="${this._quoteattr(column.title)}"
+                       style="overflow: hidden;" class="form-control" value="" readonly>`;
+          } else if (column.type.indexOf('select') >= 0) {
+            // Adding select fields
+            let options = '';
+            const optionsArray = Object.entries(column.options);
+            optionsArray.forEach(option => {
+              options += `<option value="${this._quoteattr(option[0])}">${option[1]}</option>`;
+            });
+            data += `
+                <select class="form-control ${(column.selectpicker ? 'selectpicker' : '')}"
+                        id="${this._quoteattr(column.name)}" name="${this._quoteattr(column.title)}" 
+                        title="Select an option"
+                        ${(column.multiple ? ' multiple ' : '')}
+                        ${(column.readonly ? ' readonly ' : '')}
+                        ${(column.disabled ? ' disabled ' : '')}
+                        ${(column.required ? ' required ' : '')}>${options}</select>`;
+          } else if (column.type.indexOf('textarea') >= 0) {
+            // Adding textarea
+            data += `
+                <textarea id="${this._quoteattr(column.name)}" 
+                          name="${this._quoteattr(column.title)}"
+                          rows="${this._quoteattr(column.rows)}" 
+                          cols="${this._quoteattr(column.cols)}">
+                </textarea>`;
+          } else {
+            // Adding text inputs and error labels, but also new HTML5 types (email, color, ...)
+            data += `
+                <input type="${this._quoteattr(column.type)}" id="${this._quoteattr(column.name)}"
+                       pattern="${this._quoteattr(column.pattern)}" 
+                       title="${this._quoteattr(column.hoverMsg)}"
+                       name="${this._quoteattr(column.title)}"
+                       placeholder="${this._quoteattr(column.title)}"
+                       data-special="${this._quoteattr(column.special)}"
+                       data-errorMsg="${this._quoteattr(column.msg)}"
+                       data-uniqueMsg="${this._quoteattr(column.uniqueMsg)}"
+                       data-unique="${column.unique}"
+                       ${(column.readonly ? ' readonly ' : '')}
+                       ${(column.disabled ? ' disabled ' : '')}
+                       ${(column.required ? ' required ' : '')}
+                       ${(column.maxLength === false ? '' : ` maxlength="${column.maxLength}" `)}
+                       style="overflow: hidden;" class="form-control" value="">`;
           }
-          // Adding select-fields
-          else if (columnDefs[j].type.indexOf('select') >= 0) {
-            var options = '';
-            var optionsArray = columnDefs[j].options;
-            if (optionsArray.length > 0) {
-              // array-style select or select2
-              for (var i = 0; i < optionsArray.length; i++) {
-                options += '<option value=\'' + this._quoteattr(optionsArray[i])
-                    + '\'>' + optionsArray[i] + '</option>';
-              }
-            } else {
-              // object-style select or select2
-              for (var x in optionsArray) {
-                options += '<option value=\'' + this._quoteattr(x) + '\' >'
-                    + optionsArray[x] + '</option>';
-              }
-            }
-            data += '<select class=\'form-control' + (columnDefs[j].select2 ? ' select2' : '')
-                + '\' id=\'' + this._quoteattr(columnDefs[j].name)
-                + '\' name=\'' + this._quoteattr(columnDefs[j].title) + '\' '
-                + (columnDefs[j].multiple ? ' multiple ' : '')
-                + (columnDefs[j].readonly ? ' readonly ' : '')
-                + (columnDefs[j].disabled ? ' disabled ' : '')
-                + (columnDefs[j].required ? ' required ' : '')
-                + '>' + options
-                + '</select>';
-          }
-          //Adding Text Area
-          else if (columnDefs[j].type.indexOf('textarea') >= 0) {
-            data += '<textarea id=\'' + this._quoteattr(columnDefs[j].name)
-                + '\' name=\'' + this._quoteattr(columnDefs[j].title)
-                + '\'rows=\'' + this._quoteattr(columnDefs[j].rows)
-                + '\' cols=\'' + this._quoteattr(columnDefs[j].cols)
-                + '\'>'
-                + '</textarea>';
-          }
-          // Adding text-inputs and errorlabels, but also new HTML5 typees (email, color, ...)
-          else {
-            data += '<input type=\'' + this._quoteattr(columnDefs[j].type)
-                + '\' id=\'' + this._quoteattr(columnDefs[j].name)
-                + '\' pattern=\'' + this._quoteattr(columnDefs[j].pattern)
-                + '\' title=\'' + this._quoteattr(columnDefs[j].hoverMsg)
-                + '\' name=\'' + this._quoteattr(columnDefs[j].title)
-                + '\' placeholder=\'' + this._quoteattr(columnDefs[j].title)
-                + '\' data-special=\'' + this._quoteattr(columnDefs[j].special)
-                + '\' data-errorMsg=\'' + this._quoteattr(columnDefs[j].msg)
-                + '\' data-uniqueMsg=\'' + this._quoteattr(columnDefs[j].uniqueMsg)
-                + '\' data-unique=\'' + columnDefs[j].unique
-                + '\' '
-                + (columnDefs[j].readonly ? ' readonly ' : '')
-                + (columnDefs[j].disabled ? ' disabled ' : '')
-                + (columnDefs[j].required ? ' required ' : '')
-                + (columnDefs[j].maxLength == false ? '' : ' maxlength=\''
-                    + columnDefs[j].maxLength + '\'')
-                + ' style=\'overflow:hidden\'  class=\'form-control\' value=\'\'>';
-          }
-          data += '<label id=\'' + this._quoteattr(columnDefs[j].name) + 'label'
-              + '\' class=\'errorLabel\'></label>';
-          data += '</div><div style=\'clear:both;\'></div></div>';
-        }
-      }
-      // data += "</form>";
 
-      var selector = this.modal_selector;
-      $(selector).on('show.bs.modal', function() {
-        var btns = '<button type="button" data-content="remove" class="btn btn-secondary btn-pill-left" data-dismiss="modal">'
-            + closeCaption + '</button>' +
-            '<button type="submit" form="' + formName
-            + '" data-content="remove" class="btn btn-primary btn-pill-right" id="'
-            + buttonClass + '">' + buttonCaption + '</button>';
-        $(selector).find('.modal-title').html(title);
-        $(selector).find('.modal-body').html(data);
-        $(selector).find('.modal-footer').html(btns);
-        const modalContent = $(selector).find('.modal-content');
-        if (modalContent.parent().is('form')) {
-          modalContent.parent().attr('name', formName);
-          modalContent.parent().attr('id', formName);
-        } else {
-          modalContent.wrap(
-              '<form name=\'' + formName + '\' id=\'' + formName + '\' role=\'form\'></form>');
+          data += `<label id="${this._quoteattr(column.name)}label" class="errorLabel"></label>`;
+          data += '</div><div style="clear: both;"></div></div>';
         }
       });
 
-      $(selector).modal('show');
-      $(selector + ' input[0]').focus();
+      formName = [formName, this.random_id].join('-');
+      const $selector = $(this.modal_selector);
+      $selector.on('show.bs.modal', function() {
+        const btns = `
+            <button type="button" data-content="remove" data-dismiss="modal"  
+                    class="btn btn-secondary btn-pill-left">${closeCaption}</button>
+            <button type="submit" data-content="remove" form="${formName}" id="${buttonId}"
+                    class="btn btn-primary btn-pill-right">${buttonCaption}</button>`;
+        $selector.find('.modal-title').html(title);
+        $selector.find('.modal-body').html(data);
+        $selector.find('.modal-footer').html(btns);
+        const $modalContent = $selector.find('.modal-content');
+        if ($modalContent.parent().is('form')) {
+          $modalContent.parent().attr('name', formName);
+          $modalContent.parent().attr('id', formName);
+        } else {
+          $modalContent.wrap(`<form name="${formName}" id="${formName}" role="form"></form>`);
+        }
+      });
 
-      var that = this;
+      $selector.modal('show');
+      $(`${this.modal_selector} input`)[0].focus();
 
-      // enable select 2 items, datepicker, datetimepickerm
-      for (var j in columnDefs) {
-        if (columnDefs[j].select2) {
-          // Require select2 plugin
-          $(selector).find('select#' + columnDefs[j].name).select2(columnDefs[j].select2);
-        } else if (columnDefs[j].datepicker) {
-          // Require jquery-ui
-          $(selector).find('#' + columnDefs[j].name).datepicker(columnDefs[j].datepicker);
-        } else if (columnDefs[j].datetimepicker) {
+      // Enable bootstrap-select, datepicker and datetimepicker
+      const that = this;
+      columnDefs.forEach(column => {
+        if (column.selectpicker) {
+          // Require bootstrap-select plugin
+          $selector.find(`#${column.name}`).selectpicker(column.selectpicker);
+        } else if (column.datepicker) {
+          // Require bootstrap-datepicker plugin
+          $selector.find(`#${column.name}`).datepicker(column.datepicker);
+        } else if (column.datetimepicker) {
           // Require datetimepicker plugin
-          $(selector).
-              find('#' + columnDefs[j].name).
-              datetimepicker(columnDefs[j].datetimepicker);
+          $selector.find(`#${column.name}`).datetimepicker(column.datetimepicker);
         }
         // custom onchange triggers
-        if (columnDefs[j].editorOnChange) {
-          var f = columnDefs[j].editorOnChange; // FIXME what if more than 1 editorOnChange ?
-          $(selector).find('#' + columnDefs[j].name).on('change', function(elm) {
+        if (column.editorOnChange) {
+          const f = column.editorOnChange; // FIXME what if more than 1 editorOnChange ?
+          $selector.find(`#${column.name}`).on('change', function(elm) {
             f(elm, that);
           });
         }
-      }
+      });
     },
 
-    /**
-     * Callback for "Add" button
-     */
+    // Callback for "Add" button
     _addRowData: function() {
-      var that = this;
-      var dt = this.s.dt;
-
-      var rowDataArray = {};
-
+      const rowDataArray = {};
       // Getting the inputs from the modal
-      $(`form[name="altEditor-add-form-${this.random_id}"] *`).
-          filter(':input[type!="file"]').
-          each(function(i) {
-            rowDataArray[$(this).attr('id')] = $(this).val();
-          });
+      const $editorAddForm = $(`form[name="altEditor-add-form-${this.random_id}"] *`);
+      $editorAddForm.filter(':input[type!="file"]').each(function(i) {
+        rowDataArray[$(this).attr('id')] = $(this).val();
+      });
 
       //Getting the textArea from the modal
-      $(`form[name="altEditor-add-form-${this.random_id}"] *`).
-          filter('textarea').
-          each(function(i) {
-            rowDataArray[$(this).attr('id')] = $(this).val();
-          });
+      $editorAddForm.filter('textarea').each(function(i) {
+        rowDataArray[$(this).attr('id')] = $(this).val();
+      });
 
+      const that = this;
+      let numFilesQueued = 0;
       //Getting Files from the modal
-      var numFilesQueued = 0;
-      $(`form[name="altEditor-add-form-${this.random_id}"] *`).
-          filter(':input[type="file"]').
-          each(function(i) {
-            if ($(this).prop('files')[0]) {
-              ++numFilesQueued;
-              that.getBase64($(this).prop('files')[0], function(filecontent) {
-                rowDataArray[$(this).attr('id')] = filecontent;
-                --numFilesQueued;
-              });
-            }
+      $editorAddForm.filter(':input[type="file"]').each(function(i) {
+        if ($(this).prop('files')[0]) {
+          ++numFilesQueued;
+          that.getBase64($(this).prop('files')[0], function(filecontent) {
+            rowDataArray[$(this).attr('id')] = filecontent;
+            --numFilesQueued;
           });
+        }
+      });
 
-      console.log(rowDataArray); //DEBUG
-
-      var checkFilesQueued = function() {
-        if (numFilesQueued == 0) {
+      const checkFilesQueued = function() {
+        if (numFilesQueued === 0) {
           that.onAddRow(that,
               rowDataArray,
               function(data) { that._addRowCallback(data); },
-              function(data) {
-                that._errorCallback(data);
-              });
+              function(data) { that._errorCallback(data); },
+          );
         } else {
           console.log('Waiting for file base64-decoding...');
           setTimeout(checkFilesQueued, 1000);
         }
       };
-
     },
 
-    /**
-     * Called after a row has been deleted on server
-     */
+    // Called after a row has been deleted on the server
     _deleteRowCallback: function(response, status, more) {
-      var selector = this.modal_selector;
-      $(selector + ' .modal-body .alert').remove();
+      const selector = this.modal_selector;
+      $(`${selector} .modal-body .alert`).remove();
 
-      var message = '<div class="alert alert-success" role="alert">' +
-          '<strong>' + this.language.success + '</strong>' +
-          '</div>';
-      $(selector + ' .modal-body').append(message);
+      const message = `
+          <div class="alert alert-success" role="alert">
+            <strong>${this.language.success}</strong>
+          </div>`;
+      $(`${selector} .modal-body`).append(message);
 
-      this.s.dt.row({
-        selected: true,
-      }).remove();
-      this.s.dt.draw('page');
+      const dt = this.s.dt;
+      dt.row({selected: true}).remove();
+      dt.draw('page');
 
       // Disabling submit button
-      $('div' + selector).find('button#addRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#editRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#deleteRowBtn').prop('disabled', true);
+      const $selector = $(`div${selector}`);
+      $selector.find('button#addRowBtn').prop('disabled', true);
+      $selector.find('button#editRowBtn').prop('disabled', true);
+      $selector.find('button#deleteRowBtn').prop('disabled', true);
     },
 
-    /**
-     * Called after a row has been inserted on server
-     */
+    // Called after a row has been inserted on the server
     _addRowCallback: function(response, status, more) {
+      // TODO should honor dt.ajax().dataSrc
 
-      //TODO should honor dt.ajax().dataSrc
+      const data = (typeof response === 'string') ? JSON.parse(response) : response;
+      const selector = this.modal_selector;
+      $(`${selector} .modal-body .alert`).remove();
 
-      var data = (typeof response === 'string') ? JSON.parse(response) : response;
-      var selector = this.modal_selector;
-      $(selector + ' .modal-body .alert').remove();
+      const message = `
+          <div class="alert alert-success" role="alert">
+            <strong>${this.language.success}</strong>
+          </div>`;
+      $(`${selector} .modal-body`).append(message);
 
-      var message = '<div class="alert alert-success" role="alert">' +
-          '<strong>' + this.language.success + '</strong>' +
-          '</div>';
-      $(selector + ' .modal-body').append(message);
-
-      this.s.dt.row.add(data).draw(false);
+      this.s.dt.row.add(data).draw(false);  // TODO: Does this draw a new row?
 
       // Disabling submit button
-      $('div' + selector).find('button#addRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#editRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#deleteRowBtn').prop('disabled', true);
+      const $selector = $(`div${selector}`);
+      $selector.find('button#addRowBtn').prop('disabled', true);
+      $selector.find('button#editRowBtn').prop('disabled', true);
+      $selector.find('button#deleteRowBtn').prop('disabled', true);
     },
 
-    /**
-     * Called after a row has been updated on server
-     */
+    // Called after a row has been updated on the server
     _editRowCallback: function(response, status, more) {
-
       //TODO should honor dt.ajax().dataSrc
 
-      var data = (typeof response === 'string') ? JSON.parse(response) : response;
-      var selector = this.modal_selector;
-      $(selector + ' .modal-body .alert').remove();
+      const data = (typeof response === 'string') ? JSON.parse(response) : response;
+      const selector = this.modal_selector;
+      $(`${selector} .modal-body .alert`).remove();
 
-      var message = '<div class="alert alert-success" role="alert">' +
-          '<strong>' + this.language.success + '</strong>' +
-          '</div>';
-      $(selector + ' .modal-body').append(message);
+      const message = `
+          <div class="alert alert-success" role="alert">
+            <strong>${this.language.success}</strong>
+          </div>`;
+      $(`${selector} .modal-body`).append(message);
 
-      this.s.dt.row({
-        selected: true,
-      }).data(data);
-      this.s.dt.draw('page');
+      const dt = this.s.dt;
+      dt.row({selected: true}).data(data);
+      dt.draw('page');
 
       // Disabling submit button
-      $('div' + selector).find('button#addRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#editRowBtn').prop('disabled', true);
-      $('div' + selector).find('button#deleteRowBtn').prop('disabled', true);
+      const $selector = $(`div${selector}`);
+      $selector.find('button#addRowBtn').prop('disabled', true);
+      $selector.find('button#editRowBtn').prop('disabled', true);
+      $selector.find('button#deleteRowBtn').prop('disabled', true);
     },
 
-    /**
-     * Called after AJAX server returned an error
-     */
+    // Called after AJAX server returned an error
     _errorCallback: function(response, status, more) {
-      var error = response;
-      var selector = this.modal_selector;
-      $(selector + ' .modal-body .alert').remove();
-      var errstr = this.language.error.message;
+      const error = response;
+      const selector = this.modal_selector;
+      $(`${selector} .modal-body .alert`).remove();
+
+      let errStr = this.language.error.message;
       if (error.responseJSON && error.responseJSON.errors) {
-        errstr = '';
-        for (var key in error.responseJSON.errors) {
-          errstr += error.responseJSON.errors[key][0];
+        errStr = '';
+        for (const error of error.responseJSON.errors) {
+          errStr += error[0];
         }
       }
-      var message = '<div class="alert alert-danger" role="alert">' +
-          '<strong>' + this.language.error.label + '</strong> ' + (error.status == null
-              ? ''
-              : this.language.error.responseCode + error.status) + ' ' + errstr +
-          '</div>';
+      const message = `
+          <div class="alert alert-danger" role="alert">
+            <strong>${this.language.error.label}</strong>
+            ${error.status === null
+          ? ''
+          : `${this.language.error.responseCode}${error.status} ${errStr}`}
+          </div>`;
 
-      $(selector + ' .modal-body').append(message);
+      $(`${selector} .modal-body`).append(message);
     },
 
-    /**
-     * Default callback for insertion: mock webservice, always success.
-     */
+    // Default callback for insertion: mock webservice, always success.
     onAddRow: function(dt, rowdata, success, error) {
       console.log('Missing AJAX configuration for INSERT');
       success(rowdata);
     },
 
-    /**
-     * Default callback for editing: mock webservice, always success.
-     */
+    // Default callback for editing: mock webservice, always success.
     onEditRow: function(dt, rowdata, success, error) {
       console.log('Missing AJAX configuration for UPDATE');
       success(rowdata);
     },
 
-    /**
-     * Default callback for deletion: mock webservice, always success.
-     */
+    // Default callback for deletion: mock webservice, always success.
     onDeleteRow: function(dt, rowdata, success, error) {
       console.log('Missing AJAX configuration for DELETE');
       success(rowdata);
     },
 
-    /**
-     * Dinamically reload options in SELECT menu
-     */
+    // Dynamically reload options in SELECT menu
     reloadOptions: function($select, options) {
-      var oldValue = $select.val();
+      const oldValue = $select.val();
       $select.empty(); // remove old options
       if (options.length > 0) {
-        // array-style select or select2
+        // array-style select or bootstrap-select
         $.each(options, function(key, value) {
           $select.append($('<option></option>').attr('value', value).text(value));
         });
@@ -859,6 +730,7 @@
       }
       $select.val(oldValue); // if still present, of course
       $select.trigger('change');
+      $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
     },
 
     /**
@@ -866,16 +738,14 @@
      * @see https://stackoverflow.com/questions/36280818
      */
     getBase64: function(file, onSuccess, onError) {
-      var reader = new FileReader();
+      const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = function() {
-        console.log(reader.result);
         if (onSuccess) {
           onSuccess(reader.result);
         }
       };
       reader.onerror = function(error) {
-        console.log('Error: ', error);
         if (onError) {
           onError(error);
         }
@@ -883,58 +753,47 @@
     },
 
     /**
-     * Sanitizes input for use in HTML
-     * @param s
+     * @private Sanitize input for use in HTML
+     * @param unsanitizedInput
      * @param preserveCR
      * @returns {string}
-     * @private
      */
-    _quoteattr: function(s, preserveCR) {
-      if (s == null) {
+    _quoteattr: function(unsanitizedInput, preserveCR) {
+      if (unsanitizedInput === null) {
         return '';
       }
       preserveCR = preserveCR ? '&#13;' : '\n';
-      if (Array.isArray(s)) {
+      if (Array.isArray(unsanitizedInput)) {
         // for MULTIPLE SELECT
-        var newArray = [];
-        var x;
-        for (x in s) {
-          newArray.push(s[x]);
-        }
+        const newArray = [];
+        unsanitizedInput.forEach(element => {
+          newArray.push(element);
+        });
         return newArray;
       }
-      return ('' + s) /* Forces the conversion to string. */
-          .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
-          .
-          replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
-          .
-          replace(/"/g, '&quot;').
+      return ('' + unsanitizedInput)  // Forces the conversion to string
+          .replace(/&/g, '&amp;')  // This MUST be the 1st replacement
+          .replace(/'/g, '&apos;')  //The 4 other predefined entities, required
+          .replace(/"/g, '&quot;').
           replace(/</g, '&lt;').
           replace(/>/g, '&gt;').
-          replace(/\r\n/g, preserveCR) /* Must be before the next replacement. */
-          .
-          replace(/[\r\n]/g, preserveCR);
+          replace(/\r\n/g, preserveCR)  // Must be before the next replacement
+          .replace(/[\r\n]/g, preserveCR);
     },
   });
 
   /**
-   * altEditor version
-   *
-   * @static
+   * @static altEditor version
    * @type String
    */
-  altEditor.version = '2.0';
+  altEditor.version = '3.0';
 
   /**
    * altEditor defaults
-   *
    * @namespace
    */
   altEditor.defaults = {
-    /**
-     * @type {Boolean} Ask user what they want to do, even for a single
-     *       option
-     */
+    /** @type {Boolean} Ask user what they want to do, even for a single option */
     alwaysAsk: false,
 
     /** @type {string|null} What will trigger a focus */
@@ -952,7 +811,6 @@
 
   /**
    * Classes used by altEditor that are configurable
-   *
    * @namespace
    */
   altEditor.classes = {
@@ -960,27 +818,23 @@
     btn: 'btn',
   };
 
-  // Attach a listener to the document which listens for DataTables
-  // initialisation
-  // events so we can automatically initialise
+  // Attach a listener to the document which listens for DataTables initialisation events
+  // so we can automatically initialize
   $(document).on('preInit.dt.altEditor', function(e, settings, json) {
     if (e.namespace !== 'dt') {
       return;
     }
 
-    var init = settings.oInit.altEditor;
-    var defaults = DataTable.defaults.altEditor;
+    const init = settings.oInit.altEditor;
+    const defaults = DataTable.defaults.altEditor;
 
     if (init || defaults) {
-      var opts = $.extend({}, init, defaults);
-
+      const opts = $.extend({}, init, defaults);
       if (init !== false) {
-
-        var editor = new altEditor(settings, opts);
         // e is a jQuery event object
         // e.target is the underlying jQuery object, e.g. $('#mytable')
         // so that you can retrieve the altEditor object later
-        e.target.altEditor = editor;
+        e.target.altEditor = new altEditor(settings, opts);
       }
     }
   });

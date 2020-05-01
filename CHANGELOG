@@ -1,3 +1,13 @@
+2020-04 spaghett1c0de
+    * Version 3.0
+    * Refactored the codebase with ES6 syntactic sugars
+    * Updated to support Bootstrap 4
+    * Removed unused code blocks
+    * Updated comments and documentation
+    * Removed select2 support
+    * Added support for bootstrap-select
+    * Improved modal layouts
+    * Fixed a bug where options in dropdown has identical value and text even when provided with different values.
 
 2019-07 luca-vercelli
     * better support for readonly and disabled fields, see issue #35
