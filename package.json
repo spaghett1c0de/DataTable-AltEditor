@@ -1,6 +1,6 @@
 {
   "name": "datatable-alteditor",
-  "version": "3.0",
+  "version": "3.0.0",
   "description": "A lightweight jQuery plugin that offers full row editing as an alternative to DataTables Editor. Now with Bootstrap 4 support.",
   "main": "index.js",
   "directories": {
