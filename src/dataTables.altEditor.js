@@ -407,32 +407,32 @@
     completeColumnDefs: function() {
       const columnDefs = [];
       const columns = this.s.dt.context[0].aoColumns;
-      for (let i in columns) {
-        const obj = columns[i];
-        columnDefs[i] = {
-          title: obj.sTitle,
-          name: (obj.data ? obj.data : obj.mData),
-          type: (obj.type ? obj.type : 'text'),
-          rows: (obj.rows ? obj.rows : '5'),
-          cols: (obj.cols ? obj.cols : '30'),
-          options: (obj.options ? obj.options : []),
-          readonly: (obj.readonly ? obj.readonly : false),
-          disabled: (obj.disabled ? obj.disabled : false),
-          required: (obj.required ? obj.required : false),
-          msg: (obj.errorMsg ? obj.errorMsg : ''),        // FIXME no more used
-          hoverMsg: (obj.hoverMsg ? obj.hoverMsg : ''),
-          pattern: (obj.pattern ? obj.pattern : '.*'),
-          special: (obj.special ? obj.special : ''),
-          unique: (obj.unique ? obj.unique : false),
-          uniqueMsg: (obj.uniqueMsg ? obj.uniqueMsg : ''),        // FIXME no more used
-          maxLength: (obj.maxLength ? obj.maxLength : false),
-          multiple: (obj.multiple ? obj.multiple : false),
-          selectpicker: (obj.selectpicker ? obj.selectpicker : false),
-          datepicker: (obj.datepicker ? obj.datepicker : false),
-          datetimepicker: (obj.datetimepicker ? obj.datetimepicker : false),
-          editorOnChange: (obj.editorOnChange ? obj.editorOnChange : null),
+      columns.forEach((column, index) => {
+        columnDefs[index] = {
+          title: column.sTitle,
+          name: (column.data ? column.data : column.mData),
+          type: (column.type ? column.type : 'text'),
+          rows: (column.rows ? column.rows : '5'),
+          cols: (column.cols ? column.cols : '30'),
+          options: (column.options ? column.options : []),
+          readonly: (column.readonly ? column.readonly : false),
+          disabled: (column.disabled ? column.disabled : false),
+          required: (column.required ? column.required : false),
+          msg: (column.errorMsg ? column.errorMsg : ''),        // FIXME no more used
+          hoverMsg: (column.hoverMsg ? column.hoverMsg : ''),
+          pattern: (column.pattern ? column.pattern : '.*'),
+          special: (column.special ? column.special : ''),
+          unique: (column.unique ? column.unique : false),
+          uniqueMsg: (column.uniqueMsg ? column.uniqueMsg : ''),        // FIXME no more used
+          maxLength: (column.maxLength ? column.maxLength : false),
+          multiple: (column.multiple ? column.multiple : false),
+          selectpicker: (column.selectpicker ? column.selectpicker : false),
+          datepicker: (column.datepicker ? column.datepicker : false),
+          datetimepicker: (column.datetimepicker ? column.datetimepicker : false),
+          editorOnChange: (column.editorOnChange ? column.editorOnChange : null),
         };
-      }
+      });
+
       return columnDefs;
     },
 
