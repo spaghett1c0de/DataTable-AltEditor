@@ -220,11 +220,11 @@
           // If the element is in the column and it's not the selected one then its not unique
           // (case insensitive)
           const curValueCaseInsensitive = (typeof $target.val() === 'string')
-              ? $target.val().toUpperCase() : $target.val();
+              ? $target.val().toUpperCase().trim() : $target.val();
           const elementCaseInsensitive = (typeof element === 'string')
-              ? element.toUpperCase() : element;
+              ? element.toUpperCase().trim() : element;
           const selectedCellCaseInsensitive = (typeof selectedCellData === 'string')
-              ? String(selectedCellData).toUpperCase() : selectedCellData;
+              ? String(selectedCellData).toUpperCase().trim() : selectedCellData;
           if (curValueCaseInsensitive === elementCaseInsensitive
               && curValueCaseInsensitive !== selectedCellCaseInsensitive) {
             elm.target.setCustomValidity(that.language.error.unique);
