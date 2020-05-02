@@ -696,19 +696,19 @@
     },
 
     // Default callback for insertion: mock webservice, always success.
-    onAddRow: function(dt, rowdata, success, error) {
+    onAddRow: function(altEditor, rowdata, success, error) {
       console.log('Missing AJAX configuration for INSERT');
       success(rowdata);
     },
 
     // Default callback for editing: mock webservice, always success.
-    onEditRow: function(dt, rowdata, success, error) {
+    onEditRow: function(altEditor, rowdata, success, error) {
       console.log('Missing AJAX configuration for UPDATE');
       success(rowdata);
     },
 
     // Default callback for deletion: mock webservice, always success.
-    onDeleteRow: function(dt, rowdata, success, error) {
+    onDeleteRow: function(altEditor, rowdata, success, error) {
       console.log('Missing AJAX configuration for DELETE');
       success(rowdata);
     },
