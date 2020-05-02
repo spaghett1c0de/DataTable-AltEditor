@@ -201,7 +201,7 @@
       }
 
       // Bind 'unique' error messages
-      $(this.modal_selector).bind('input', '[data-unique]', function(elm) {
+      $(this.modal_selector).on('input', '[data-unique]', function(elm) {
         const $target = $(elm.target);
         if ($target.attr('data-unique') === null || $target.attr('data-unique') === 'false') {
           return;
@@ -211,14 +211,22 @@
         let selectedCellData = null;
         if (dt.row({selected: true}).index() !== null) {
           selectedCellData = dt.cell(dt.row({selected: true}).index(),
-              dt.column('th:contains(\'' + $target.attr('name') + '\')').index()).data();
+              dt.column(`th:contains('${$target.attr('name')}')`).index()).data();
         }
         elm.target.setCustomValidity('');
 
-        const colData = dt.column('th:contains(\'' + $target.attr('name') + '\')').data();
+        const colData = dt.columns(`th:contains('${$target.attr('name')}')`).data()[0];
         colData.forEach(element => {
-          // If the element is in the column and its not the selected one then its not unique
-          if ($target.val() === element && element !== selectedCellData) {
+          // If the element is in the column and it's not the selected one then its not unique
+          // (case insensitive)
+          const curValueCaseInsensitive = (typeof $target.val() === 'string')
+              ? $target.val().toUpperCase() : $target.val();
+          const elementCaseInsensitive = (typeof element === 'string')
+              ? element.toUpperCase() : element;
+          const selectedCellCaseInsensitive = (typeof selectedCellData === 'string')
+              ? String(selectedCellData).toUpperCase() : selectedCellData;
+          if (curValueCaseInsensitive === elementCaseInsensitive
+              && curValueCaseInsensitive !== selectedCellCaseInsensitive) {
             elm.target.setCustomValidity(that.language.error.unique);
           }
         });
