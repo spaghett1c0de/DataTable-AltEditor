@@ -62,10 +62,10 @@
     }
 
     // User and defaults configuration object
-    this.c = $.extend(true, {}, DataTable.defaults.altEditor, altEditor.defaults, opts);
+    this.configuration = $.extend(true, {}, DataTable.defaults.altEditor, altEditor.defaults, opts);
 
     /** @namespace Settings object which contains customisable information for altEditor instance */
-    this.s = {
+    this.settings = {
       /** @type {DataTable.Api} DataTables' API instance */
       dt: new DataTable.Api(dt),
       /** @type {String} Unique namespace for events attached to the document */
@@ -86,7 +86,7 @@
     /** @private _constructor: Initialise the RowReorder instance */
     _constructor: function() {
       const that = this;
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
 
       if (dt.settings()[0].oInit.onAddRow) {
         that.onAddRow = dt.settings()[0].oInit.onAddRow;
@@ -112,7 +112,7 @@
     /** @private _setup: DOM and bind button actions */
     _setup: function() {
       const that = this;
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
       this.random_id = String(Math.random()).replace('.', '');
       const modal_id = `altEditor-modal-${this.random_id}`;
       this.modal_selector = `#${modal_id}`;
@@ -225,8 +225,8 @@
       });
 
       // Add 'Refresh' button
-      if (this.s.dt.button('refresh:name')) {
-        this.s.dt.button('refresh:name').action(function(e, dt, node, config) {
+      if (this.settings.dt.button('refresh:name')) {
+        this.settings.dt.button('refresh:name').action(function(e, dt, node, config) {
           if (dt.ajax && dt.ajax.url()) {
             dt.ajax.reload();
           }
@@ -240,7 +240,7 @@
       this.createDialog(columnDefs, this.language.edit.title, this.language.edit.button,
           this.language.modalClose, 'editRowBtn', 'altEditor-edit-form');
 
-      const adata = this.s.dt.rows({selected: true});
+      const adata = this.settings.dt.rows({selected: true});
       const $selector = $(this.modal_selector);
       columnDefs.forEach(column => {
         const arrIndex = '[\'' + column.name.toString().split('.').join('\'][\'') + '\']';
@@ -310,7 +310,7 @@
     /** @private Open Delete Modal for selected row */
     _openDeleteModal: function() {
       const that = this;
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
       const adata = dt.rows({selected: true});
       const formName = `altEditor-delete-form-${this.random_id}`;
 
@@ -367,7 +367,7 @@
     // Callback for 'Delete' button
     _deleteRow: function() {
       const that = this;
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
       const jsonDataArray = {};
       const adata = dt.rows({selected: true});
 
@@ -406,7 +406,7 @@
     // Complete DataTable.context[0].aoColumns with default values
     completeColumnDefs: function() {
       const columnDefs = [];
-      const columns = this.s.dt.context[0].aoColumns;
+      const columns = this.settings.dt.context[0].aoColumns;
       columns.forEach((column, index) => {
         columnDefs[index] = {
           title: column.sTitle,
@@ -612,7 +612,7 @@
           </div>`;
       $(`${selector} .modal-body`).append(message);
 
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
       dt.row({selected: true}).remove();
       dt.draw('page');
 
@@ -637,7 +637,7 @@
           </div>`;
       $(`${selector} .modal-body`).append(message);
 
-      this.s.dt.row.add(data).draw(false);  // TODO: Does this draw a new row?
+      this.settings.dt.row.add(data).draw(false);  // TODO: Does this draw a new row?
 
       // Disabling submit button
       const $selector = $(`div${selector}`);
@@ -660,7 +660,7 @@
           </div>`;
       $(`${selector} .modal-body`).append(message);
 
-      const dt = this.s.dt;
+      const dt = this.settings.dt;
       dt.row({selected: true}).data(data);
       dt.draw('page');
 
