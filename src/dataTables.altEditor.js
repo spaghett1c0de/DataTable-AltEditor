@@ -425,6 +425,7 @@
           unique: (column.unique ? column.unique : false),
           uniqueMsg: (column.uniqueMsg ? column.uniqueMsg : ''),        // FIXME no more used
           maxLength: (column.maxLength ? column.maxLength : false),
+          minLength: (column.minLength ? column.minLength : false),
           multiple: (column.multiple ? column.multiple : false),
           selectpicker: (column.selectpicker ? column.selectpicker : false),
           datepicker: (column.datepicker ? column.datepicker : false),
@@ -506,6 +507,7 @@
                        ${(column.disabled ? ' disabled ' : '')}
                        ${(column.required ? ' required ' : '')}
                        ${(column.maxLength === false ? '' : ` maxlength="${column.maxLength}" `)}
+                       ${(column.minLength === false ? '' : ` maxlength="${column.minLength}" `)}
                        style="overflow: hidden;" class="form-control" value="">`;
           }
 
