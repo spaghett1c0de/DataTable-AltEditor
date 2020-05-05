@@ -308,6 +308,7 @@
               function(data, b, c, d, e) { that._editRowCallback(data, b, c, d, e); },
               function(data) { that._errorCallback(data); });
         } else {
+          console.log('Waiting for file base64-decoding...');
           setTimeout(checkFilesQueued, 1000);
         }
       };
@@ -406,9 +407,9 @@
           this.language.modalClose, 'addRowBtn', 'altEditor-add-form');
 
       $(`${this.modal_selector} input`)[0].focus();
-      $(this.modal_selector).
-          trigger('alteditor:some_dialog_opened').
-          trigger('alteditor:add_dialog_opened');
+      $(this.modal_selector)
+          .trigger('alteditor:some_dialog_opened')
+          .trigger('alteditor:add_dialog_opened');
     },
 
     // Complete DataTable.context[0].aoColumns with default values
@@ -602,13 +603,14 @@
           that.onAddRow(that,
               rowDataArray,
               function(data) { that._addRowCallback(data); },
-              function(data) { that._errorCallback(data); },
-          );
+              function(data) { that._errorCallback(data); });
         } else {
           console.log('Waiting for file base64-decoding...');
           setTimeout(checkFilesQueued, 1000);
         }
       };
+
+      checkFilesQueued();
     },
 
     // Called after a row has been deleted on the server
@@ -784,10 +786,10 @@
       return ('' + unsanitizedInput)  // Forces the conversion to string
           .replace(/&/g, '&amp;')  // This MUST be the 1st replacement
           .replace(/'/g, '&apos;')  //The 4 other predefined entities, required
-          .replace(/"/g, '&quot;').
-          replace(/</g, '&lt;').
-          replace(/>/g, '&gt;').
-          replace(/\r\n/g, preserveCR)  // Must be before the next replacement
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\r\n/g, preserveCR)  // Must be before the next replacement
           .replace(/[\r\n]/g, preserveCR);
     },
   });
