@@ -252,18 +252,11 @@
       const $selector = $(this.modal_selector);
       columnDefs.forEach(column => {
         const arrIndex = '[\'' + column.name.toString().split('.').join('\'][\'') + '\']';
-        const selectedText = this._quoteattr(eval('adata.data()[0]' + arrIndex));
-        const jquerySelector = '#' + column.name.toString().replace(/\./g, '\\.');
-        const $jquerySelector = $selector.find(jquerySelector);
-        if (column.type === 'select') {
-          const selectedValue = this._quoteattr(
-              $jquerySelector.find(`option:contains("${selectedText}")`).val());
-          $jquerySelector.val(selectedValue);
-          if (column.selectpicker) {
-            $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
-          }
-        } else {
-          $jquerySelector.val(selectedText);
+        const selectedValue = this._quoteattr(eval('adata.data()[0]' + arrIndex));
+        const $jquerySelector = $selector.find('#' + column.name.toString().replace(/\./g, '\\.'));
+        $jquerySelector.val(selectedValue);
+        if (column.selectpicker) {
+          $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
         }
       });
 
