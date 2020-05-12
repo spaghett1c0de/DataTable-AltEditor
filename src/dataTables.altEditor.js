@@ -207,27 +207,37 @@
           return;
         }
 
-        // Go through each item in this column
+        // Reset custom validation
+        elm.target.setCustomValidity('');
+
+        // Go through each item in this column and find the selected item
         let selectedCellData = null;
         if (dt.row({selected: true}).index() !== null) {
           selectedCellData = dt.cell(dt.row({selected: true}).index(),
               dt.column(`th:contains('${$target.attr('name')}')`).index()).data();
         }
-        elm.target.setCustomValidity('');
 
         const colData = dt.columns(`th:contains('${$target.attr('name')}')`).data()[0];
         colData.forEach(element => {
-          // If the element is in the column and it's not the selected one then its not unique
+          // Modal title is used to determine whether it's add or edit modal
+          const modalTitle = $(that.modal_selector).find('h5.modal-title').text().trim();
+          // If the element is in the column and it's not the selected one then it's not unique
           // (case insensitive)
           const curValueCaseInsensitive = (typeof $target.val() === 'string')
               ? $target.val().toUpperCase().trim() : $target.val();
           const elementCaseInsensitive = (typeof element === 'string')
               ? element.toUpperCase().trim() : element;
-          const selectedCellCaseInsensitive = (typeof selectedCellData === 'string')
-              ? String(selectedCellData).toUpperCase().trim() : selectedCellData;
-          if (curValueCaseInsensitive === elementCaseInsensitive
-              && curValueCaseInsensitive !== selectedCellCaseInsensitive) {
-            elm.target.setCustomValidity(that.language.error.unique);
+          if (modalTitle === 'Add Record') {
+            if (curValueCaseInsensitive === elementCaseInsensitive) {
+              elm.target.setCustomValidity(that.language.error.unique);
+            }
+          } else if (modalTitle === 'Edit Record') {
+            const selectedCellCaseInsensitive = (typeof selectedCellData === 'string')
+                ? String(selectedCellData).toUpperCase().trim() : selectedCellData;
+            if (curValueCaseInsensitive === elementCaseInsensitive
+                && curValueCaseInsensitive !== selectedCellCaseInsensitive) {
+              elm.target.setCustomValidity(that.language.error.unique);
+            }
           }
         });
       });
