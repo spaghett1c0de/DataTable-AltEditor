@@ -263,7 +263,9 @@
       columnDefs.forEach(column => {
         const arrIndex = '[\'' + column.name.toString().split('.').join('\'][\'') + '\']';
         const selectedValue = this._quoteattr(eval('adata.data()[0]' + arrIndex));
-        const $jquerySelector = $selector.find('#' + column.name.toString().replace(/\./g, '\\.'));
+        const $jquerySelector = column.datetimepicker
+            ? $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}DateInput`)
+            : $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}`);
         $jquerySelector.val(selectedValue);
         if (column.selectpicker) {
           $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
@@ -480,6 +482,22 @@
                        name="${this._quoteattr(column.title)}" 
                        placeholder="${this._quoteattr(column.title)}"
                        style="overflow: hidden;" class="form-control" value="" readonly>`;
+          } else if (column.datetimepicker) {
+            // Adding datetimepicker fields
+            data += `
+                <div id="${this._quoteattr(column.name)}" class="input-group date"
+                     data-target-input="nearest">
+                  <input id="${this._quoteattr(column.name)}DateInput" type="text"
+                         class="form-control datetimepicker-input"
+                         data-target="#${this._quoteattr(column.name)}"
+                         ${(column.readonly ? ' readonly ' : '')}
+                         ${(column.disabled ? ' disabled ' : '')}
+                         ${(column.required ? ' required ' : '')}>
+                  <span class="input-group-append" data-target="#${this._quoteattr(column.name)}"
+                        data-toggle="datetimepicker">
+                    <span class="input-group-text fas fa-calendar-alt"></span>
+                  </span>
+                </div>`;
           } else if (column.type.indexOf('select') >= 0) {
             // Adding select fields
             let options = '';
