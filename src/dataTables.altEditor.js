@@ -357,9 +357,9 @@
       const $selector = $(this.modal_selector);
       $selector.on('show.bs.modal', function() {
         const btns = `
-            <button type="button" data-content="remove" class="btn btn-secondary btn-pill-left"
+            <button type="button" data-content="remove" class="btn btn-secondary"
                     data-dismiss="modal">${that.language.modalClose}</button>
-            <button type="submit" data-content="remove" class="btn btn-danger btn-pill-right" 
+            <button type="submit" data-content="remove" class="btn btn-danger" 
                     id="deleteRowBtn">${that.language.delete.button}</button>`;
         $selector.find('.modal-title').html(that.language.delete.title);
         $selector.find('.modal-body').html(data);
@@ -478,8 +478,8 @@
           if (column.type.indexOf('readonly') >= 0) {
             // type=readonly is deprecated, kept for backward compatibility
             data += `
-                <input type="text" id="${this._quoteattr(column.name)}" 
-                       name="${this._quoteattr(column.title)}" 
+                <input type="text" id="${this._quoteattr(column.name)}"
+                       name="${this._quoteattr(column.title)}"
                        placeholder="${this._quoteattr(column.title)}"
                        style="overflow: hidden;" class="form-control" value="" readonly>`;
           } else if (column.datetimepicker) {
@@ -551,9 +551,9 @@
       $selector.on('show.bs.modal', function() {
         const btns = `
             <button type="button" data-content="remove" data-dismiss="modal"  
-                    class="btn btn-secondary btn-pill-left">${closeCaption}</button>
+                    class="btn btn-secondary">${closeCaption}</button>
             <button type="submit" data-content="remove" form="${formName}" id="${buttonId}"
-                    class="btn btn-primary btn-pill-right">${buttonCaption}</button>`;
+                    class="btn btn-primary">${buttonCaption}</button>`;
         $selector.find('.modal-title').html(title);
         $selector.find('.modal-body').html(data);
         $selector.find('.modal-footer').html(btns);
