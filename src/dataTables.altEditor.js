@@ -751,19 +751,22 @@
       const oldValue = $select.val();
       $select.empty(); // remove old options
       if (options.length > 0) {
-        // array-style select or bootstrap-select
+        // Options data provided in array-style
         $.each(options, function(key, value) {
           $select.append($('<option></option>').attr('value', value).text(value));
         });
       } else {
-        // object-style select or select2
+        // Options data provided in object-style
         $.each(options, function(key, value) {
           $select.append($('<option></option>').attr('value', value).text(key));
         });
       }
       $select.val(oldValue); // if still present, of course
       $select.trigger('change');
-      $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
+
+      if ($.fn.selectpicker) {
+        $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
+      }
     },
 
     /**
