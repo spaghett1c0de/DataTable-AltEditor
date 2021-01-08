@@ -264,8 +264,10 @@
         const arrIndex = '[\'' + column.name.toString().split('.').join('\'][\'') + '\']';
         const selectedValue = this._quoteattr(eval('adata.data()[0]' + arrIndex));
         const $jquerySelector = column.datetimepicker
-            ? $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}DateInput`)
-            : $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}`);
+            ? $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}DatetimepickerInput`)
+            : column.datepicker
+                ? $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}DatepickerInput`)
+                : $selector.find(`#${column.name.toString().replace(/\./g, '\\.')}`);
         $jquerySelector.val(selectedValue);
         if (column.selectpicker) {
           $('.selectpicker').selectpicker('refresh'); // Refresh bootstrap-select
@@ -482,12 +484,25 @@
                        name="${this._quoteattr(column.title)}"
                        placeholder="${this._quoteattr(column.title)}"
                        style="overflow: hidden;" class="form-control" value="" readonly>`;
+          } else if (column.datepicker) {
+            // Adding datepicker fields
+            data += `
+                <div id="${this._quoteattr(column.name)}" class="input-group date">
+                  <input id="${this._quoteattr(column.name)}DatepickerInput" class="form-control"
+                         type="text"
+                         ${(column.readonly ? ' readonly ' : '')}
+                         ${(column.disabled ? ' disabled ' : '')}
+                         ${(column.required ? ' required ' : '')}>
+                  <span class="input-group-append input-group-addon">
+                    <span class="input-group-text fas fa-calendar-alt"></span>
+                  </span>
+                </div>`;
           } else if (column.datetimepicker) {
             // Adding datetimepicker fields
             data += `
                 <div id="${this._quoteattr(column.name)}" class="input-group date"
                      data-target-input="nearest">
-                  <input id="${this._quoteattr(column.name)}DateInput" type="text"
+                  <input id="${this._quoteattr(column.name)}DatetimepickerInput" type="text"
                          class="form-control datetimepicker-input"
                          data-target="#${this._quoteattr(column.name)}"
                          ${(column.readonly ? ' readonly ' : '')}
